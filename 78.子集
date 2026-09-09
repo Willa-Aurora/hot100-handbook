@@ -10,4 +10,54 @@
 2.递归时从j+1开始，保证不重复使用元素，且子集不重复。
 3.输入为空数组时，应返回[[]]（空集）。
 4.注意递归终止条件是j遍历完，但代码中用循环控制，无需显式终止。
- 
+
+时空复杂度：
+- 时间复杂度 O(n * 2^n)，共 2^n 个子集，每个子集复制需 O(n)
+- 空间复杂度 O(n)，递归栈和路径空间
+
+输入输出示例：
+示例 1：
+输入: [1,2,3]
+输出: [[],[1],[1,2],[1,2,3],[1,3],[2],[2,3],[3]]
+
+示例 2：
+输入: [0]
+输出: [[],[0]]
+
+示例 3：
+输入: []
+输出: [[]]
+"""
+
+import sys
+import json
+from typing import List
+
+class Solution:
+   def subsets(sself,nums:List[int])->List[List[int]]:
+      ans=[]
+      n=len(nums)
+      cur=[]
+      def dfs(i:int)->None:
+          ans.append(cur.copy())
+          for j in range(i,n):
+              cur.append(nums[j])
+              dfs(j+1)
+              cur.pop()
+   dfs(0)
+   return ans
+
+def main():
+    data = sys.stdin.read().strip()
+    if not data:
+        return
+    try:
+        nums = json.loads(data)
+    except:
+        nums = list(map(int, data.split()))
+    sol = Solution()
+    result = sol.subsets(nums)
+    print(json.dumps(result))
+
+if __name__ == "__main__":
+    main()
