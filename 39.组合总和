@@ -1,67 +1,66 @@
 """
-【组合总和-回溯】
+【组合总和 - 回溯】
 
 思路（简洁）：
-用DFS遍历每个侯选数，对于每个数有两种选择：不选或者选；
-维护剩余目标left，当left==0时记录当前路径；当left<0或遍历所有数时返回；
-注意选当前数后递归仍从i开始，实现重复选取。
+用 DFS 遍历每个候选数，对于每个数有两种选择：不选或选（可重复选）。
+维护剩余目标 left，当 left == 0 时记录路径；当 left < 0 或遍历完时返回。
 
 易错点：
-1.可以重复使用同一个数字，所以选之后递归参数是i而不是i+1；
-2.先判断left==0记录答案，再判断越界或left<0返回；
-3.path需要copy后再加入答案，否则后续修改会影响已保存的结果；
-4.输入target可能为0，此时应返回[[]]（但题目通常target>0）；
-5.候选数可能重复？题目保证无重复，但代码不依赖此。
+1. 可以重复使用同一个数字，选之后递归参数是 i 而不是 i+1。
+2. 先判断 left == 0 记录答案，再判断越界或 left < 0 返回。
+3. path 需要 copy 后再加入答案。
+4. 输入 target 可能为 0，应返回 [[]]。
 
 时空复杂度：
--时间复杂度O(n*2^target)，最坏情况指数级，但实际受target限制；
--空间复杂度O(target)，递归深度和路径长度。
+- 时间 O(n * 2^target)，最坏指数级
+- 空间 O(target)，递归深度
 
 输入输出示例：
-示例1：
-输入：
+输入:
 [2,3,6,7]
 7
-输出：
-[[2,2,3],[7]]
+输出: [[2,2,3],[7]]
 """
 
 import sys
 import json
 from typing import List
 
+
 class Solution:
-    def combinationSum(self,candidates:List[int],target:int)->List[List[int]]:
-        ans=[]
-        path=[]
-        n=len(candidates)
-        def dfs(i:int,left:int)->None:
-            if left==0:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        ans = []
+        path = []
+        n = len(candidates)
+
+        def dfs(i: int, left: int) -> None:
+            if left == 0:
                 ans.append(path.copy())
                 return
-            if i==n or left<0:
+            if i == n or left < 0:
                 return
-            dfs(i+1,left)
-            path.append(candidates[i])
-            dfs(i,left-candidates[i])
+            dfs(i + 1, left)                       # 不选
+            path.append(candidates[i])             # 选
+            dfs(i, left - candidates[i])
             path.pop()
-        dfs(0,target)
+
+        dfs(0, target)
         return ans
 
-    def main():
-        lines = sys.stdin.read().strip().splitlines()
-        if len(lines) < 2:
-            return
-        try:
-            candidates = json.loads(lines[0])
-            target = int(lines[1])
-        except:
-            # 用已经读到的 lines 做兼容，而不是重新读 stdin
-            candidates = list(map(int, lines[0].strip('[]').split(',')))
-            target = int(lines[1])
-        sol = Solution()
-        print(json.dumps(sol.combinationSum(candidates, target)))
-        
-    if __name__="__main__":
-        main()
-        
+
+def main():                                        
+    lines = sys.stdin.read().strip().splitlines()
+    if len(lines) < 2:
+        return
+    try:
+        candidates = json.loads(lines[0])
+        target = int(lines[1])
+    except:
+        candidates = list(map(int, lines[0].strip('[]').split(',')))
+        target = int(lines[1])
+    sol = Solution()
+    print(json.dumps(sol.combinationSum(candidates, target)))
+
+
+if __name__ == "__main__":                         
+    main()
