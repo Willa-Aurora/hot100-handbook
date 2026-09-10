@@ -1,0 +1,62 @@
+"""
+【打家劫舍 - 动态规划（滚动变量）】
+
+思路（简洁）：
+设 pre 表示「不偷当前房屋时的最大金额」，cur 表示「考虑到当前房屋为止的最大金额」。
+遍历每个房屋 num：
+- 新的最大值 = max(pre + num, cur)，即「偷当前 + 前前最大」 vs 「不偷当前」
+- 然后更新 pre = 旧 cur，cur = 新最大值
+最终 cur 即为答案。
+
+易错点：
+1. 递推式：cur, pre = max(pre + num, cur), cur，注意赋值顺序（先算右边再赋值）。
+2. 初始 cur = 0, pre = 0，对应「没有房屋」的情况。
+3. 不能偷相邻房屋，所以用 pre 表示隔一个的状态。
+4. 输入可能为空数组，返回 0。
+
+时空复杂度：
+- 时间复杂度 O(n)，一次遍历
+- 空间复杂度 O(1)，只用两个变量
+
+输入输出示例：
+示例 1：
+输入: [1,2,3,1]
+输出: 4
+
+示例 2：
+输入: [2,7,9,3,1]
+输出: 12
+
+示例 3：
+输入: []
+输出: 0
+"""
+
+import sys
+import json
+from typing import List
+
+
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        cur, pre = 0, 0
+        for num in nums:
+            cur, pre = max(pre + num, cur), cur
+        return cur
+
+
+def main():
+    data = sys.stdin.read().strip()
+    if not data:
+        return
+    try:
+        nums = json.loads(data)
+    except:
+        # 兼容空格分隔的数字
+        nums = list(map(int, data.split()))
+    sol = Solution()
+    print(sol.rob(nums))
+
+
+if __name__ == "__main__":
+    main()
