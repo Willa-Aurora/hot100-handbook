@@ -1,0 +1,62 @@
+"""
+【完全平方数 - 记忆化搜索】
+
+思路（简洁）：
+dfs(i, j) 表示用 1², 2², ..., i² 凑出 j 所需的最少个数。
+- i == 0：j == 0 返回 0，否则返回 inf（不可能）
+- j < i²：只能不选 i²，递归 dfs(i-1, j)
+- 否则：min(不选 i², 选 i² + 1)
+答案：dfs(isqrt(n), n)
+
+@cache 写在类外，多个测试用例之间共享缓存，减少重复计算。
+
+时空复杂度：
+- 时间 O(sqrt(n) * n)
+- 空间 O(sqrt(n) * n)
+
+输入输出示例：
+输入: 12
+输出: 3
+
+输入: 13
+输出: 2
+
+输入: 12 13 1
+输出:
+3
+2
+1
+"""
+
+import sys
+from math import isqrt, inf
+from functools import cache
+
+
+@cache
+def dfs(i: int, j: int) -> int:
+    if i == 0:
+        return inf if j else 0
+    if j < i * i:
+        return dfs(i - 1, j)
+    return min(dfs(i - 1, j), dfs(i, j - i * i) + 1)
+
+
+class Solution:
+    def numSquares(self, n: int) -> int:
+        return dfs(isqrt(n), n)
+
+
+def main():
+    data = sys.stdin.read().strip()
+    if not data:
+        return
+    # 支持多个测试用例，空格或换行分隔
+    nums = list(map(int, data.split()))
+    sol = Solution()
+    out = [str(sol.numSquares(n)) for n in nums]
+    print("\n".join(out))
+
+
+if __name__ == "__main__":
+    main()
