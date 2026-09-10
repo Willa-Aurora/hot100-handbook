@@ -1,0 +1,59 @@
+"""
+  【电话号码的字母组合-回溯】
+  输入输出示例：
+  示例1:
+  输入：'23'
+  输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+  不需要去除，每次都是从不同的集合里面拿出来并且有顺序。
+
+  【思路】：
+    用回溯法，按digits的每一位依次选择对应字母。维护路径path，当字母长度达到n的时候将path拼接成字符串加入答案。
+    对每一位digit，遍历其映射的所有字母。
+
+  【易错点】：
+    1.输入为空字符串时，直接返回[]；
+    2.MAPPING索引要与数字字符对应（0和1无字母，映射为空字符串）；
+    3.path长度为n，递归填充每一位后拼接，避免字符串拼接；
+    4.digits只含2-9，无需处理0和1。
+
+  【时空复杂度】：
+    -时间复杂度O(4^n)，每个字母最多对应4个字母；
+    -空间复杂度O(n)，递归栈和路径空间。
+"""
+
+import sys
+import json
+from typing import List
+
+class Solution:
+    def letterCombinations(self,digits:str)->List[str]:
+        MAPPING="","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"
+        n=len(digits)
+        if n==0:
+            return []
+        ans=[]
+        path=['']*n
+        def dfs(i:int)->None:
+            if i==n:
+                ans.append(''.join(path))
+                return
+            for c in MAPPING[int(digits[i])]:
+                path[i]=c
+                dfs(i+1)
+        dfs(0)
+        return ans
+
+    def main():
+        data=sys.stdin.read().strip()
+        if not data:
+            return
+        try:
+            digits=json.loads(data)
+        except:
+            digits=data.split()[0] #如果没有[0]那就是列表，有了才是字符串
+        sol=Solution()
+        result=sol.letterCombinations(digits)
+        print(json.dumps(result))
+
+   if __name__=="__main__":
+        main()
