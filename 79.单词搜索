@@ -1,0 +1,98 @@
+"""
+【单词搜索 - DFS回溯 + 剪枝】
+
+思路（简洁）：
+1. 先用 Counter 统计棋盘字符频次，若 word 中有字符数量超过棋盘，直接返回 False。
+2. 剪枝优化：若 word 末尾字符在棋盘中出现次数少于首字符，反转 word，
+   让搜索从更稀有的字符开始，减少搜索分支。
+3. 对棋盘每个格子启动 DFS，逐字符匹配 word：
+   - 当前格字符不匹配，返回 False
+   - 匹配到最后一个字符，返回 True
+   - 将当前格临时标记为空字符串 ''，避免重复访问
+   - 向上下左右四个方向递归
+   - 回溯时恢复 board[i][j]
+
+易错点：
+1. Counter 比较：`cnt >= Counter(word)` 表示每个字符的数量都不少于 word 中对应数量。
+2. 剪枝反转 word 后，DFS 逻辑不变，仍然从头匹配。
+3. 临时标记为 ''（不能用其他字符，避免与 board 中已有字符冲突）。
+4. 递归返回 True 时不需要恢复 board（提前退出），返回 False 时才恢复。
+5. 边界条件：board 可能为空（但题目通常保证非空）。
+
+时空复杂度：
+- 时间复杂度 O(m * n * 4^L)，L 为 word 长度，最坏情况每个格子向四个方向扩展
+- 空间复杂度 O(L)，递归栈深度
+
+输入输出示例：
+示例 1：
+输入:
+[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]]
+ABCCED
+输出: true
+
+示例 2：
+输入:
+[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]]
+SEE
+输出: true
+
+示例 3：
+输入:
+[["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]]
+ABCB
+输出: false
+"""
+
+import sys
+import json
+from typing import List
+from collections import Counter
+
+
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        # 1. 字符频次剪枝：word 中字符数不能超过棋盘
+        cnt = Counter(c for row in board for c in row)
+        if not cnt >= Counter(word):
+            return False
+        # 2. 优化：让搜索从出现次数更少的字符端开始
+        if cnt[word[-1]] < cnt[word[0]]:
+            word = word[::-1]
+
+        m, n = len(board), len(board[0])
+
+        def dfs(i: int, j: int, k: int) -> bool:
+            if board[i][j] != word[k]:
+                return False
+            if k == len(word) - 1:
+                return True
+            board[i][j] = ''          # 标记已访问
+            for x, y in ((i, j - 1), (i, j + 1), (i - 1, j), (i + 1, j)):
+                if 0 <= x < m and 0 <= y < n and dfs(x, y, k + 1):
+                    return True
+            board[i][j] = word[k]     # 回溯
+            return False
+
+        return any(dfs(i, j, 0) for i in range(m) for j in range(n))
+
+
+def main():
+    # 输入分两部分：棋盘（多行 JSON 数组）+ word（字符串）
+    # 约定格式：第一行是棋盘 JSON，第二行是 word
+    lines = sys.stdin.read().strip().splitlines()
+    if len(lines) < 2:
+        return
+    try:
+        board = json.loads(lines[0])
+        word = lines[1].strip()
+        # 若 word 带引号（JSON 格式），去掉引号
+        if word.startswith('"') and word.endswith('"'):
+            word = json.loads(word)
+    except:
+        return
+    sol = Solution()
+    print("true" if sol.exist(board, word) else "false")
+
+
+if __name__ == "__main__":
+    main()
