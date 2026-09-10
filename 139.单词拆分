@@ -1,0 +1,67 @@
+"""
+【单词拆分 - 动态规划】
+
+思路（简洁）：
+dp[i] 表示 s 的前 i 个字符能否由字典中的单词拼出。
+初始化 dp[0] = True（空串可拼出）。
+对每个位置 i，枚举分割点 j（0 <= j < i），若 dp[j] 为 True 且 s[j:i] 在字典中，
+则 dp[i] = True。最终返回 dp[n]。
+
+易错点：
+1. dp 数组长度为 n+1，dp[0] = True。
+2. 内层枚举 j 时，只要找到一个合法分割即可 break（用 any 自动短路）。
+3. 字典用 set 存储，查找 O(1)。
+4. s 为空串时返回 True（dp[0]）。
+5. 输入 s 可能带引号，需兼容 JSON 字符串。
+
+时空复杂度：
+- 时间复杂度 O(n^2)，n 为字符串长度（子串哈希查找视为 O(1)）
+- 空间复杂度 O(n)，dp 数组
+
+输入输出示例：
+示例 1：
+输入:
+leetcode
+["leet","code"]
+输出: true
+
+示例 2：
+输入:
+applepenapple
+["apple","pen"]
+输出: true
+
+示例 3：
+输入:
+catsandog
+["cats","dog","sand","and","cat"]
+输出: false
+"""
+
+import sys
+import json
+from typing import List
+
+
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        words = set(wordDict)
+        n = len(s)
+        dp = [True] + [False] * n
+        for i in range(1, n + 1):
+            dp[i] = any(dp[j] and s[j:i] in words for j in range(i))
+        return dp[n]
+
+def main():
+    # 输入：一行是 s，一行是字典数组，如：leetcode ["leet","code"]
+    data = sys.stdin.read().split()
+    if len(data) < 2:
+        return
+    s = data[0].strip('"')          # 去掉可能的引号
+    wordDict = json.loads(' '.join(data[1:]))  # 后面的部分拼回 JSON 数组
+    sol = Solution()
+    print("true" if sol.wordBreak(s, wordDict) else "false")
+
+
+if __name__ == "__main__":
+    main()
