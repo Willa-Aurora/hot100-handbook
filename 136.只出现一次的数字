@@ -1,0 +1,60 @@
+"""
+【只出现一次的数字 - 异或】
+
+思路（简洁）：
+利用异或运算的性质：
+- a ^ a = 0
+- a ^ 0 = a
+- 异或满足交换律和结合律
+将所有数字依次异或，出现两次的数字会互相抵消为 0，
+最终剩下的就是只出现一次的数字。
+
+易错点：
+1. 本题 LeetCode 136 要求返回单个整数，返回类型应为 int，不是 List[int]。
+2. 若题目要求找出两个只出现一次的数字（LeetCode 260），
+   则异或后得到的是两个数的异或结果，需要进一步分组，
+   不能直接返回。
+3. 输入可能为空（题目保证至少一个元素）。
+
+时空复杂度：
+- 时间复杂度 O(n)，一次遍历
+- 空间复杂度 O(1)
+
+输入输出示例：
+示例 1：
+输入: [4,1,2,1,2]
+输出: 4
+
+示例 2：
+输入: [2,2,1]
+输出: 1
+
+示例 3：
+输入: [1]
+输出: 1
+"""
+
+import sys
+import json
+from typing import List
+
+
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        x = 0
+        for num in nums:
+            x ^= num
+        return x
+
+
+def main():
+    data = sys.stdin.read().split()
+    if not data:
+        return
+    nums = json.loads(data[0])
+    sol = Solution()
+    print(sol.singleNumber(nums))
+
+
+if __name__ == "__main__":
+    main()
