@@ -1,0 +1,62 @@
+"""
+【跳跃游戏 II - 贪心】
+
+思路（简洁）：
+维护当前跳跃能到达的边界 cur_end 和下一次能到达的最远位置 next_end。
+遍历数组（不包含最后一个元素），更新 next_end = max(next_end, i + nums[i])。
+当 i 到达 cur_end 时，说明必须再跳一次，跳跃次数 ans++，并更新 cur_end = next_end。
+最终 ans 即为最少跳跃次数。
+
+易错点：
+1. 遍历范围是 range(len(nums) - 1)，最后一个元素不需要处理。
+2. 更新 next_end 在判断 i == cur_end 之前，确保覆盖当前步所有能到的位置。
+3. 初始 cur_end = 0，next_end = 0，ans = 0。
+4. 题目保证一定能到达终点，因此无需处理无法到达的情况。
+
+时空复杂度：
+- 时间 O(n)，一次遍历
+- 空间 O(1)，仅用常数额外变量
+
+输入输出示例：
+示例 1：
+输入: [2,3,1,1,4]
+输出: 2
+
+示例 2：
+输入: [2,3,0,1,4]
+输出: 2
+
+示例 3：
+输入: [1,2,3]
+输出: 2
+"""
+
+import sys
+import json
+from typing import List
+
+
+class Solution:
+    def jump(self, nums: List[int]) -> int:
+        ans = 0
+        cur_end = 0
+        next_end = 0
+        for i in range(len(nums) - 1):
+            next_end = max(next_end, i + nums[i])
+            if i == cur_end:
+                cur_end = next_end
+                ans += 1
+        return ans
+
+
+def main():
+    data = sys.stdin.read().split()
+    if not data:
+        return
+    nums = json.loads(data[0])
+    sol = Solution()
+    print(sol.jump(nums))
+
+
+if __name__ == "__main__":
+    main()
