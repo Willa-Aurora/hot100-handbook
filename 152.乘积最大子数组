@@ -1,0 +1,64 @@
+"""
+【乘积最大子数组 - 动态规划（滚动变量）】
+
+思路（简洁）：
+维护两个变量：f_max 表示以当前元素结尾的最大乘积，f_min 表示以当前元素结尾的最小乘积。
+遍历每个数 x，新的 f_max 和 f_min 由以下三者决定：
+- f_max * x（延续之前的最大乘积）
+- f_min * x（负数乘负数可能变最大）
+- x（从当前元素重新开始）
+用 max 和 min 同时更新，最后答案取所有 f_max 中的最大值。
+
+易错点：
+1. 必须同时维护最大值和最小值，因为负数乘以负数会变成正数。
+2. 更新 f_max 和 f_min 时必须用旧值同时计算，不能先更新一个再用新值算另一个。
+   Python 中可用元组同时赋值：f_max, f_min = max(...), min(...)
+3. ans 初始化为 -inf，因为数组可能只有一个负数。
+4. 输入可能包含 0，此时 f_max 和 f_min 会被重置为 0 或 x。
+
+时空复杂度：
+- 时间复杂度 O(n)，一次遍历
+- 空间复杂度 O(1)，仅用常数个变量
+
+输入输出示例：
+示例 1：
+输入: [2,3,-2,4]
+输出: 6
+
+示例 2：
+输入: [-2,0,-1]
+输出: 0
+
+示例 3：
+输入: [-2,3,-4]
+输出: 24
+"""
+
+import sys
+import json
+from math import inf
+from typing import List
+
+
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        ans = -inf
+        f_max = f_min = 1
+        for x in nums:
+            # 同时更新，避免相互影响
+            f_max, f_min = max(f_max * x, f_min * x, x), min(f_max * x, f_min * x, x)
+            ans = max(ans, f_max)
+        return ans
+
+
+def main():
+    data = sys.stdin.read().split()
+    if not data:
+        return
+    nums = json.loads(data[0])
+    sol = Solution()
+    print(sol.maxProduct(nums))
+
+
+if __name__ == "__main__":
+    main()
