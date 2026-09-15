@@ -1,0 +1,65 @@
+"""
+【颜色分类 - 三指针（一次遍历）】
+
+思路（简洁）：
+维护两个指针 p0 和 p1，分别指向下一个 0 和下一个 1 应该放置的位置。
+遍历数组，对于每个 x：
+- 先把当前位置置为 2（默认是红色）
+- 若 x <= 1，说明该位置最终应放 0 或 1，将 nums[p1] 置为 1，p1++
+- 若 x == 0，说明该位置最终应放 0，将 nums[p0] 置为 0，p0++
+这样一趟遍历即可完成原地排序。
+
+易错点：
+1. 必须先 nums[i] = 2，再根据 x 覆盖为 1 或 0，否则会丢失信息。
+2. p1 处理 1 和 0，p0 只处理 0，顺序不能颠倒。
+3. 原地修改，函数无返回值。
+4. 输入只含 0、1、2。
+
+时空复杂度：
+- 时间复杂度 O(n)，一次遍历
+- 空间复杂度 O(1)，原地修改
+
+输入输出示例：
+示例 1：
+输入: [2,0,2,1,1,0]
+输出: [0,0,1,1,2,2]
+
+示例 2：
+输入: [2,0,1]
+输出: [0,1,2]
+
+示例 3：
+输入: [0]
+输出: [0]
+"""
+
+import sys
+import json
+from typing import List
+
+
+class Solution:
+    def sortColors(self, nums: List[int]) -> None:
+        p0 = p1 = 0
+        for i, x in enumerate(nums):
+            nums[i] = 2            # 默认先置为 2
+            if x <= 1:             # x 是 0 或 1，该位置应放 1（或后面再改成 0）
+                nums[p1] = 1
+                p1 += 1
+            if x == 0:             # x 是 0，该位置应放 0
+                nums[p0] = 0
+                p0 += 1
+
+
+def main():
+    data = sys.stdin.read().split()
+    if not data:
+        return
+    nums = json.loads(data[0])
+    sol = Solution()
+    sol.sortColors(nums)
+    print(json.dumps(nums))
+
+
+if __name__ == "__main__":
+    main()
