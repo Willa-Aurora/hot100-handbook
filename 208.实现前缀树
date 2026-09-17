@@ -1,0 +1,111 @@
+"""
+【实现 Trie（前缀树）- 字典树】
+
+思路（简洁）：
+每个节点包含一个子节点字典 son 和一个结束标记 end。
+- insert：从根出发，逐字符向下，没有就新建节点，最后把 end 置为 True。
+- find：从根出发，逐字符向下。若中途缺少字符，返回 0（没找到）；
+  走完整个单词后，end 为 True 返回 2（完整单词），否则返回 1（仅是前缀）。
+- search：find 返回 2 才算找到完整单词。
+- startsWith：find 返回非 0（1 或 2）即为有前缀。
+
+易错点：
+1. find 返回三种状态：0 未匹配，1 前缀匹配，2 完整单词，便于复用。
+2. 节点用 __slots__ 优化内存（可选）。
+3. 插入时最后要设置 cur.end = True。
+4. 空字符串也是合法单词/前缀，需正确处理（本题通常不涉及）。
+
+时空复杂度：
+- 时间复杂度：insert/search/startsWith 均为 O(L)，L 为字符串长度
+- 空间复杂度：O(N * L)，N 为插入单词总数，L 为平均长度
+
+输入输出示例：
+输入：
+["Trie","insert","search","search","startsWith","insert","search"]
+[[],["apple"],["apple"],["app"],["app"],["app"],["app"]]
+输出：
+null
+null
+true
+false
+true
+null
+true
+"""
+
+import sys
+import json
+
+
+class Node:
+    __slots__ = 'son', 'end'
+
+    def __init__(self):
+        self.son = {}
+        self.end = False
+
+
+class Trie:
+    def __init__(self):
+        self.root = Node()
+
+    def insert(self, word: str) -> None:
+        cur = self.root
+        for c in word:
+            if c not in cur.son:
+                cur.son[c] = Node()
+            cur = cur.son[c]
+        cur.end = True
+
+    def find(self, word: str) -> int:
+        cur = self.root
+        for c in word:
+            if c not in cur.son:
+                return 0
+            cur = cur.son[c]
+        return 2 if cur.end else 1
+
+    def search(self, word: str) -> bool:
+        return self.find(word) == 2
+
+    def startsWith(self, prefix: str) -> bool:
+        return self.find(prefix) != 0
+
+
+def main():
+    # 1. 读取所有输入
+    content = sys.stdin.read().strip()
+    if not content:
+        return
+
+    # 2. 按行分割（第一行是 commands，第二行是 args）
+    lines = content.splitlines()
+    if len(lines) < 2:
+        return
+
+    # 3. 解析 JSON 数组
+    commands = json.loads(lines[0])   # ["Trie","insert","search",...]
+    args = json.loads(lines[1])       # [[],["apple"],["apple"],...]
+
+    obj = None
+    output = []
+
+    # 4. 逐个执行命令
+    for cmd, arg in zip(commands, args):
+        if cmd == "Trie":
+            obj = Trie()
+            output.append("null")
+        elif cmd == "insert":
+            obj.insert(arg[0])
+            output.append("null")
+        elif cmd == "search":
+            output.append("true" if obj.search(arg[0]) else "false")
+        elif cmd == "startsWith":
+            output.append("true" if obj.startsWith(arg[0]) else "false")
+
+    # 5. 输出结果（每个结果占一行）
+    print("\n".join(output))
+
+
+if __name__ == "__main__":
+    main()
