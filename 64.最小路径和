@@ -1,0 +1,66 @@
+"""
+【最小路径和 - 动态规划（原地修改）】
+
+思路（简洁）：
+直接在原 grid 上修改，每个格子存储从左上角到达该格子的最小路径和。
+- 起点 (0,0) 不变。
+- 第一行只能从左边过来：grid[0][j] += grid[0][j-1]
+- 第一列只能从上边过来：grid[i][0] += grid[i-1][0]
+- 其他格子：grid[i][j] += min(grid[i-1][j], grid[i][j-1])
+最终返回右下角的值。
+
+易错点：
+1. 起点 (0,0) 必须跳过，不能重复累加。
+2. 第一行和第一列需要单独处理，因为它们只有一个方向可来。
+3. 原地修改会覆盖原数据，但题目通常允许。
+4. 网格至少有一行一列，无需处理空输入。
+
+时空复杂度：
+- 时间复杂度 O(m * n)，每个格子访问一次
+- 空间复杂度 O(1)，原地修改，未使用额外空间
+
+输入输出示例：
+示例 1：
+输入: [[1,3,1],[1,5,1],[4,2,1]]
+输出: 7
+
+示例 2：
+输入: [[1,2,3],[4,5,6]]
+输出: 12
+
+示例 3：
+输入: [[5]]
+输出: 5
+"""
+
+import sys
+import json
+from typing import List
+
+
+class Solution:
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if i == 0 and j == 0:
+                    continue
+                elif i == 0:
+                    grid[i][j] = grid[i][j - 1] + grid[i][j]
+                elif j == 0:
+                    grid[i][j] = grid[i - 1][j] + grid[i][j]
+                else:
+                    grid[i][j] = min(grid[i - 1][j], grid[i][j - 1]) + grid[i][j]
+        return grid[-1][-1]
+
+
+def main():
+    data = sys.stdin.read().split()
+    if not data:
+        return
+    grid = json.loads(data[0])
+    sol = Solution()
+    print(sol.minPathSum(grid))
+
+
+if __name__ == "__main__":
+    main()
